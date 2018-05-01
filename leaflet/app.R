@@ -10,12 +10,14 @@ library('mapPE')
 library("mapview")
 library(shinymaterial)
 library(shinydashboard)
+install.packages("mapPE")
 
 sheet<- gs_key('1hT9JHKGhKR1QcUDB8ylylURmgxoIkylLd4SF9zqdTVo')
 kebele<-shapefile("inst/extdata/kebeles.shp")
 fnm1<- system.file("/extdata/kebeles.shp", package = "mapPE")
 #kebele <- shapefile(fnm1)
 getwd()
+fnm1
 
 #Creating School points
 Schoolpoints<- sheet %>% gs_read(ws = 1, range = "A1:R18")
@@ -35,10 +37,7 @@ EconOpp<- sheet %>% gs_read(ws = 4, range = "A1:E34")
 EconOpp<- as.data.frame(EconOpp)
 kebeles <- merge(kebeleS,EconOpp)
 
-shinyServer(function (input, output) {
-  output$map <- renderLeaflet({
-  })
-})
+
 bins1 <- c(0, 1, 2, 3, 5, Inf)
 palUniT <- colorBin(
   palette = "YlOrRd",
@@ -58,7 +57,8 @@ palEO <- colorBin(
   bins = bins3
 )
 
-shinyServer(function(input,output) {
+server <-function(input,output) {
+  data <- reactiveValues(clickedMarker=NULL)
   output$map<- renderLeaflet({
     m <- leaflet()
     m <- m %>%
@@ -166,10 +166,10 @@ shinyServer(function(input,output) {
                                     popupImage(kebeles$EOphotos)))
   })
 
-})
+}
 
 
-shinyUI( material_page(
+ui<- material_page(
   title = "Project Ethiopia Achievement Map",
   nav_bar_color = "green darken-2",
   material_tabs(
@@ -190,4 +190,7 @@ shinyUI( material_page(
     tab_id= "EO_Tab",
     fluidRow(leafletOutput("mapEO", height= 600))
   )
-))
+)
+
+runApp(shinyApp(ui, server), launch.browser = TRUE)
+

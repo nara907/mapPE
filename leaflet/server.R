@@ -105,6 +105,7 @@ shinyServer(function(input,output) {
                                     '<h8 style="color:white;">', "Latrines:", kebeles$`Latrines`, '</h8>', "<br>",
                                     popupImage(kebeles$HVphotos)))
   })
+
   output$mapEO<- renderLeaflet({
     EO<- leaflet()
     EO <- EO %>%
